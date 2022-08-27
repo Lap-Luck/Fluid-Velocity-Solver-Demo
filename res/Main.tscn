@@ -1,0 +1,285 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Window.gd" type="Script" id=1]
+[ext_resource path="res://Engine.gd" type="Script" id=2]
+[ext_resource path="res://simple_arrow.svg" type="Texture" id=3]
+[ext_resource path="res://res/icon.png" type="Texture" id=4]
+
+[node name="Node" type="Node"]
+
+[node name="SetWindowMinSize" type="Node" parent="."]
+script = ExtResource( 1 )
+
+[node name="Background" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.52549, 0.560784, 0.372549, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HSplitContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+collapsed = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MainWindow" type="Control" parent="HBoxContainer"]
+margin_right = 550.0
+margin_bottom = 600.0
+rect_min_size = Vector2( 550, 550 )
+
+[node name="SimView" type="MarginContainer" parent="HBoxContainer/MainWindow"]
+margin_left = 25.0
+margin_top = 25.0
+margin_right = 525.0
+margin_bottom = 525.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="GridContainer" type="GridContainer" parent="HBoxContainer/MainWindow/SimView"]
+margin_right = 516.0
+margin_bottom = 516.0
+rect_min_size = Vector2( 500, 500 )
+columns = 5
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Panel" type="Panel" parent="HBoxContainer/MainWindow/SimView/GridContainer"]
+margin_right = 100.0
+margin_bottom = 100.0
+rect_min_size = Vector2( 100, 100 )
+
+[node name="Panel2" type="Panel" parent="HBoxContainer/MainWindow/SimView/GridContainer"]
+margin_left = 104.0
+margin_right = 204.0
+margin_bottom = 100.0
+rect_min_size = Vector2( 100, 100 )
+
+[node name="Panel3" type="Panel" parent="HBoxContainer/MainWindow/SimView/GridContainer"]
+margin_left = 208.0
+margin_right = 308.0
+margin_bottom = 100.0
+rect_min_size = Vector2( 100, 100 )
+
+[node name="Panel4" type="Panel" parent="HBoxContainer/MainWindow/SimView/GridContainer"]
+margin_left = 312.0
+margin_right = 412.0
+margin_bottom = 100.0
+rect_min_size = Vector2( 100, 100 )
+
+[node name="Panel5" type="Panel" parent="HBoxContainer/MainWindow/SimView/GridContainer"]
+margin_left = 416.0
+margin_right = 516.0
+margin_bottom = 100.0
+rect_min_size = Vector2( 100, 100 )
+
+[node name="Panel6" type="Panel" parent="HBoxContainer/MainWindow/SimView/GridContainer"]
+margin_top = 104.0
+margin_right = 100.0
+margin_bottom = 204.0
+rect_min_size = Vector2( 100, 100 )
+
+[node name="Panel7" type="Panel" parent="HBoxContainer/MainWindow/SimView/GridContainer"]
+margin_left = 104.0
+margin_top = 104.0
+margin_right = 204.0
+margin_bottom = 204.0
+rect_min_size = Vector2( 100, 100 )
+
+[node name="Panel8" type="Panel" parent="HBoxContainer/MainWindow/SimView/GridContainer"]
+margin_left = 208.0
+margin_top = 104.0
+margin_right = 308.0
+margin_bottom = 204.0
+rect_min_size = Vector2( 100, 100 )
+
+[node name="Panel9" type="Panel" parent="HBoxContainer/MainWindow/SimView/GridContainer"]
+margin_left = 312.0
+margin_top = 104.0
+margin_right = 412.0
+margin_bottom = 204.0
+rect_min_size = Vector2( 100, 100 )
+
+[node name="Panel10" type="Panel" parent="HBoxContainer/MainWindow/SimView/GridContainer"]
+margin_left = 416.0
+margin_top = 104.0
+margin_right = 516.0
+margin_bottom = 204.0
+rect_min_size = Vector2( 100, 100 )
+
+[node name="Panel11" type="Panel" parent="HBoxContainer/MainWindow/SimView/GridContainer"]
+margin_top = 208.0
+margin_right = 100.0
+margin_bottom = 308.0
+rect_min_size = Vector2( 100, 100 )
+
+[node name="Panel12" type="Panel" parent="HBoxContainer/MainWindow/SimView/GridContainer"]
+margin_left = 104.0
+margin_top = 208.0
+margin_right = 204.0
+margin_bottom = 308.0
+rect_min_size = Vector2( 100, 100 )
+
+[node name="Panel13" type="Panel" parent="HBoxContainer/MainWindow/SimView/GridContainer"]
+margin_left = 208.0
+margin_top = 208.0
+margin_right = 308.0
+margin_bottom = 308.0
+rect_min_size = Vector2( 100, 100 )
+
+[node name="Obstacle" type="ColorRect" parent="HBoxContainer/MainWindow/SimView/GridContainer/Panel13"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.501961, 0.141176, 0.141176, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Panel14" type="Panel" parent="HBoxContainer/MainWindow/SimView/GridContainer"]
+margin_left = 312.0
+margin_top = 208.0
+margin_right = 412.0
+margin_bottom = 308.0
+rect_min_size = Vector2( 100, 100 )
+
+[node name="Panel15" type="Panel" parent="HBoxContainer/MainWindow/SimView/GridContainer"]
+margin_left = 416.0
+margin_top = 208.0
+margin_right = 516.0
+margin_bottom = 308.0
+rect_min_size = Vector2( 100, 100 )
+
+[node name="Panel16" type="Panel" parent="HBoxContainer/MainWindow/SimView/GridContainer"]
+margin_top = 312.0
+margin_right = 100.0
+margin_bottom = 412.0
+rect_min_size = Vector2( 100, 100 )
+
+[node name="Panel17" type="Panel" parent="HBoxContainer/MainWindow/SimView/GridContainer"]
+margin_left = 104.0
+margin_top = 312.0
+margin_right = 204.0
+margin_bottom = 412.0
+rect_min_size = Vector2( 100, 100 )
+
+[node name="Panel18" type="Panel" parent="HBoxContainer/MainWindow/SimView/GridContainer"]
+margin_left = 208.0
+margin_top = 312.0
+margin_right = 308.0
+margin_bottom = 412.0
+rect_min_size = Vector2( 100, 100 )
+
+[node name="Panel19" type="Panel" parent="HBoxContainer/MainWindow/SimView/GridContainer"]
+margin_left = 312.0
+margin_top = 312.0
+margin_right = 412.0
+margin_bottom = 412.0
+rect_min_size = Vector2( 100, 100 )
+
+[node name="Panel20" type="Panel" parent="HBoxContainer/MainWindow/SimView/GridContainer"]
+margin_left = 416.0
+margin_top = 312.0
+margin_right = 516.0
+margin_bottom = 412.0
+rect_min_size = Vector2( 100, 100 )
+
+[node name="Panel21" type="Panel" parent="HBoxContainer/MainWindow/SimView/GridContainer"]
+margin_top = 416.0
+margin_right = 100.0
+margin_bottom = 516.0
+rect_min_size = Vector2( 100, 100 )
+
+[node name="Panel22" type="Panel" parent="HBoxContainer/MainWindow/SimView/GridContainer"]
+margin_left = 104.0
+margin_top = 416.0
+margin_right = 204.0
+margin_bottom = 516.0
+rect_min_size = Vector2( 100, 100 )
+
+[node name="Panel23" type="Panel" parent="HBoxContainer/MainWindow/SimView/GridContainer"]
+margin_left = 208.0
+margin_top = 416.0
+margin_right = 308.0
+margin_bottom = 516.0
+rect_min_size = Vector2( 100, 100 )
+
+[node name="Panel24" type="Panel" parent="HBoxContainer/MainWindow/SimView/GridContainer"]
+margin_left = 312.0
+margin_top = 416.0
+margin_right = 412.0
+margin_bottom = 516.0
+rect_min_size = Vector2( 100, 100 )
+
+[node name="Panel25" type="Panel" parent="HBoxContainer/MainWindow/SimView/GridContainer"]
+margin_left = 416.0
+margin_top = 416.0
+margin_right = 516.0
+margin_bottom = 516.0
+rect_min_size = Vector2( 100, 100 )
+
+[node name="ButtonPanel" type="ColorRect" parent="HBoxContainer"]
+margin_left = 562.0
+margin_right = 1024.0
+margin_bottom = 600.0
+rect_min_size = Vector2( 100, 0 )
+color = Color( 0.141176, 0.556863, 0.188235, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="info" type="RichTextLabel" parent="HBoxContainer/ButtonPanel"]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -114.0
+text = "This app computes possible vellocity field given force allong arrow. That satifie transport equation: INCOMING_FLOW=OUTGOING_FLOW.
+Similar techinque are usualy used as step in fluid symulation named \"projection\".
+
+NOTE: this app solves equation system explistly whixh is inpractical in large simluation"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PlayButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+margin_left = 12.0
+margin_top = 35.0
+margin_right = 89.0
+margin_bottom = 55.0
+text = "compute"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="HBoxContainer/ButtonPanel"]
+margin_left = 98.0
+margin_top = 207.0
+margin_right = 138.0
+margin_bottom = 221.0
+text = "Waring :TODO pass matrix inverse test!!!!!!!!"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Engine" type="Node" parent="."]
+script = ExtResource( 2 )
+grid = NodePath("../HBoxContainer/MainWindow/SimView/GridContainer")
+
+[node name="SimpleArrow" type="Sprite" parent="Engine"]
+position = Vector2( 178, 333 )
+texture = ExtResource( 3 )
+
+[node name="Icon" type="Sprite" parent="Engine"]
+visible = false
+position = Vector2( 279, 430 )
+texture = ExtResource( 4 )
+
+[node name="SimpleArrow2" type="Sprite" parent="Engine"]
+position = Vector2( 73, 334 )
+texture = ExtResource( 3 )
+
+[connection signal="pressed" from="HBoxContainer/ButtonPanel/PlayButton" to="Engine" method="_on_PlayButton_pressed"]
