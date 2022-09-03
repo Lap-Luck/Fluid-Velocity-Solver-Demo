@@ -116,7 +116,7 @@ func solve():
 	print(m)
 	print("*UNKOWN=",equations_value)
 	print("trying to solve....")
-	var back_d=m.data
+	var back_d=m.data.duplicate()
 	m.inverse()
 
 	#print(m)
