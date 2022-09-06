@@ -29,8 +29,36 @@ func pool_of_zeros(size:int):
 		res[i]=0.0
 	return res
 
+func zeros(count:int)->Array:
+	var res=[]
+	for i in range(count):
+		res.append(0.0)
+	return res
+
+func vector_sub(a:Array,b:Array)->Array:
+	var res=zeros(a.size())
+	for i in range(a.size()):
+		res[i]=a[i]-b[i]
+	return res
 
 
+func vector_norm(a,norm):
+	if not a is Array:
+		assert(false)
+	match norm:
+		"L1":
+			var res=0.0
+			for e in a:
+				res+=abs(e)
+			return res
+		"L2":
+			var res=0.0
+			for e in a:
+				res+=abs(e)*abs(e)
+			return res
+		_:
+			assert(false)
+	return
 #MY_NUM_DEBUG
 
 class My_num:
@@ -107,6 +135,55 @@ class My_num2:
 	func _to_float():
 		return self.value
 
+class Equation:
+	var variables=[]
+	var weights=[]
+	var value=0.0
+	func _to_string():
+		var res:=""
+		for i in range(variables.size()):
+			res+=String(weights[i])+"*x_"+String(variables[i])+"+"
+		res+="="
+		res=res.replace("+=","=")
+		res+=String(value)
+		return res
+	func add(v_id,w):
+		if not v_id is int:
+			assert(false)
+		if not w is float:
+			assert(false)
+		self.variables.append(v_id)
+		self.weights.append(w)
+		return self
+	
+class EquationSystem:
+	var data:Array=[]
+	func add(e:Equation):
+		data.append(e)
+	func _to_string():
+		var res:=""
+		for i in range(data.size()):
+			if Global.data.has("PRINT_EQUATION_SYSTEM_IN_ONE_LINE"):
+				res+=data[i]._to_string()+";"
+			else:
+				res+=data[i]._to_string()+"\n"
+		return res
+	func get_matrix():
+		var dim=data.size()
+		var res=Matrix.new(dim)
+		for row_id in dim:
+			var e:Equation=data[row_id]
+			for i in range(e.variables.size()):
+				res.inc_value(e.variables[i],row_id,e.weights[i])
+		return res
+	
+	func get_vector():
+		var dim=data.size()
+		var res=PoolRealArray([])
+		for row_id in dim:
+			res.append(data[row_id].value)
+		return res
+			
 class Matrix:# to represnt squere matrix 
 	var NUM_LIB=My_num2
 	var data:Array=[]
@@ -117,6 +194,9 @@ class Matrix:# to represnt squere matrix
 			for x in range(dim):
 				self.data.append(NUM_LIB.new(0.0))
 	func inverse()->void:
+		if not "MI_log" in Global.data.keys():
+			Global.data["MI_log"]=[]
+		Global.data["MI_log"].append(0)
 		var res=Matrix.new(dim)
 		for i in range(dim):
 			res.data[i*dim+i]=NUM_LIB.new(1.0)
@@ -132,9 +212,11 @@ class Matrix:# to represnt squere matrix
 				for res_x in range(dim):
 					var value_change=weight.mul(res.data[self_x*dim+res_x])
 					res.data[self_y*dim+res_x]=res.data[self_y*dim+res_x].add(value_change)
+					Global.data["MI_log"][-1]+=1
 				for id_x in range(dim):
 					var value_change=weight.mul(self.data[self_x*dim+id_x])
 					self.data[self_y*dim+id_x]=self.data[self_y*dim+id_x].add(value_change)
+					Global.data["MI_log"][-1]+=1
 			if Global.data.has("MATRIX_DEBUG"):
 				print("re",res)
 				print("se",self)
@@ -164,6 +246,13 @@ class Matrix:# to represnt squere matrix
 	func set_value(x:int,y:int,value):
 		if value is float:
 			self.data[y*dim+x]=NUM_LIB.new(value)
+			
+	func get_value(x:int,y:int):
+		return self.data[y*dim+x]._to_float()
+		
+	func inc_value(x:int,y:int,value):
+		if value is float:
+			self.data[y*dim+x]=self.data[y*dim+x].add(NUM_LIB.new(value))
 	
 	func mul(vec:PoolRealArray):
 		if vec.size()!=self.dim:

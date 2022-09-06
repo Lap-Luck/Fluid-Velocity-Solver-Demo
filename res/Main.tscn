@@ -245,22 +245,142 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="ColorRect" type="ColorRect" parent="HBoxContainer/ButtonPanel"]
+margin_left = 8.0
+margin_top = 26.0
+margin_right = 445.0
+margin_bottom = 67.0
+color = Color( 0.819608, 0.654902, 0.305882, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ColorRect2" type="ColorRect" parent="HBoxContainer/ButtonPanel"]
+margin_left = 7.0
+margin_top = 118.0
+margin_right = 444.0
+margin_bottom = 159.0
+color = Color( 0.819608, 0.654902, 0.305882, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="PlayButton" type="Button" parent="HBoxContainer/ButtonPanel"]
-margin_left = 12.0
-margin_top = 35.0
-margin_right = 89.0
-margin_bottom = 55.0
+margin_left = 331.0
+margin_top = 36.0
+margin_right = 408.0
+margin_bottom = 56.0
 text = "compute"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Label" type="Label" parent="HBoxContainer/ButtonPanel"]
-margin_left = 98.0
-margin_top = 207.0
-margin_right = 138.0
-margin_bottom = 221.0
-text = "Waring :TODO pass matrix inverse test!!!!!!!!"
+[node name="PlayButton2" type="Button" parent="HBoxContainer/ButtonPanel"]
+margin_left = 324.0
+margin_top = 128.0
+margin_right = 401.0
+margin_bottom = 148.0
+text = "compute"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label_Error" type="Label" parent="HBoxContainer/ButtonPanel"]
+margin_left = 236.0
+margin_top = 78.0
+margin_right = 380.0
+margin_bottom = 92.0
+text = "matrix inverse error="
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="value" type="Label" parent="HBoxContainer/ButtonPanel/Label_Error"]
+margin_left = 137.0
+margin_right = 170.0
+margin_bottom = 14.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "0000"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label_Error2" type="Label" parent="HBoxContainer/ButtonPanel"]
+margin_left = 243.0
+margin_top = 191.0
+margin_right = 387.0
+margin_bottom = 205.0
+text = "matrix inverse error="
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="value" type="Label" parent="HBoxContainer/ButtonPanel/Label_Error2"]
+margin_left = 137.0
+margin_right = 170.0
+margin_bottom = 14.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "0000"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label_Iteration" type="Label" parent="HBoxContainer/ButtonPanel"]
+margin_left = 35.0
+margin_top = 77.0
+margin_right = 100.0
+margin_bottom = 91.0
+text = "iteration="
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="value" type="Label" parent="HBoxContainer/ButtonPanel/Label_Iteration"]
+margin_left = 63.0
+margin_right = 96.0
+margin_bottom = 14.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "0000"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label_Iteration2" type="Label" parent="HBoxContainer/ButtonPanel"]
+margin_left = 38.0
+margin_top = 184.0
+margin_right = 103.0
+margin_bottom = 198.0
+text = "iteration="
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="value" type="Label" parent="HBoxContainer/ButtonPanel/Label_Iteration2"]
+margin_left = 63.0
+margin_right = 96.0
+margin_bottom = 14.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "0000"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label2" type="Label" parent="HBoxContainer/ButtonPanel"]
+margin_left = 22.0
+margin_top = 41.0
+margin_right = 303.0
+margin_bottom = 55.0
+text = "Direct Solution by Dense Matrix Inverse"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label3" type="Label" parent="HBoxContainer/ButtonPanel"]
+margin_left = 23.0
+margin_top = 132.0
+margin_right = 304.0
+margin_bottom = 146.0
+text = "Relaxed(0.9) Jacobi 500 iteration"
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -283,3 +403,4 @@ position = Vector2( 73, 334 )
 texture = ExtResource( 3 )
 
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/PlayButton" to="Engine" method="_on_PlayButton_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonPanel/PlayButton2" to="Engine" method="_on_PlayButton2_pressed"]

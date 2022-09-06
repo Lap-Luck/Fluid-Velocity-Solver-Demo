@@ -73,10 +73,42 @@ var solve_res=[]
 var flow_x
 var flow_y
 
-func solve():
+func raf_solve(eq,way):
+	var res
+	match way:
+		"DENSE_INVERSE":
+			var m:Tools.Matrix=eq.get_matrix()
+			var v:PoolRealArray=eq.get_vector()
+			m.inverse()
+			res=m.mul(v)
+			if not Global.data.has("SKIP_CHECK"):
+				m=eq.get_matrix()
+				$"../HBoxContainer/ButtonPanel/Label_Error/value".text=String(
+		Tools.vector_norm(Tools.vector_sub(m.mul(res),v),"L1"))
+				$"../HBoxContainer/ButtonPanel/Label_Iteration/value".text=String(Global.data["MI_log"][-1])
+		"JACOBI":
+			var relaxation=0.9
+			
+			var m:Tools.Matrix=eq.get_matrix()
+			var v:PoolRealArray=eq.get_vector()
+			var x:PoolRealArray=Tools.zeros(v.size())
+			for try in range(50*10):
+				var err=Tools.vector_sub(m.mul(x),v)
+				for i in range(err.size()):
+					x[i]-=relaxation*err[i]/m.get_value(i,i)
+			res=x
+			$"../HBoxContainer/ButtonPanel/Label_Error2/value".text=String(
+		Tools.vector_norm(Tools.vector_sub(m.mul(res),v),"L1"))
+		_:
+			assert(false)
+	return res
+		
+	
+func solve(way):
 	assert(ceils_cont==24)
 	assert(map[0][0]==true)
 	var m=Tools.Matrix.new(24)
+	var m_system=Tools.EquationSystem.new()
 	
 	#Very ceil has spash(preshure) it is amount of staf sent to its nerboiurs
 	#We solve equation system besed on SPASH_FROM_OTHERS-OWN_SPASH=EXTERNAL_INGOING_MATTER
@@ -88,21 +120,27 @@ func solve():
 	#
 	var equations_value=Tools.pool_of_zeros(24)
 	
+	
 	var equation_id=0
 	m.set_value(global_ceils_id[[0,0]],equation_id,1.0)
+	m_system.add(Tools.Equation.new().add(global_ceils_id[[0,0]],1.0))
 	equations_value[equation_id]=0.0
 	for x in range(5):
 		for y in range(5):
+			var eq=Tools.Equation.new()
 			if x==0 and y==0: continue
 			if not map[y][x]: continue
 			equation_id+=1
 			m.set_value(global_ceils_id[[x,y]],equation_id,-1.0)
+			eq.add(global_ceils_id[[x,y]],-1.0)
 			for near in near_ceils[[x,y]]:
 				var near_near_count=near_ceils[near].size()
 				if near_near_count==0:
 					print("Error no conncted to:",near)
 					assert(false)
 				m.set_value(global_ceils_id[near],equation_id,1.0/float(near_near_count))
+				eq.add(global_ceils_id[near],1.0/float(near_near_count))
+			m_system.add(eq)
 			equations_value[equation_id]=0.0
 			if [x,y]==[1,2]:
 				equations_value[equation_id]=10.0
@@ -112,20 +150,43 @@ func solve():
 				equations_value[equation_id]=10.0
 			if [x,y]==[0,3]:
 				equations_value[equation_id]=-10.0
-	print("Created equation")
-	print(m)
-	print("*UNKOWN=",equations_value)
-	print("trying to solve....")
-	var back_d=m.data.duplicate()
-	m.inverse()
+	for i in range(equations_value.size()):
+		#print(i)
+		var d=m_system.data
+		#print(d)
+		var e=d[i]
+		#print(e)
+		e.value=equations_value[i]
+		
+	var solution
+	match way:
+		"DENSE_INVERSE":
+			print("OK")
+			solution=raf_solve(m_system,"DENSE_INVERSE")
+		"JACOBI":
+			print("FAIL")
+			solution=raf_solve(m_system,"JACOBI")
+		_:
+			assert(false)
+	if false:
+		var m2=m_system.get_matrix()
 
-	#print(m)
-	var solution=m.mul(equations_value)
-	print(solution)
-	m.data=back_d
-	print("equation check")
-	print(m.mul(solution))
-	print("????????")
+		print("Created equation")
+		print(m2)
+		print("*UNKOWN=",equations_value)
+		print("trying to solve....")
+		var back_d=m.data.duplicate()
+		m2.inverse()
+
+		#print(m)
+		var solution_old=m2.mul(equations_value)
+		print(solution_old)
+		m2.data=back_d
+		print("equation check")
+		print(m.mul(solution_old))
+		$"../HBoxContainer/ButtonPanel/Label_Error/value".text=String(
+			Tools.vector_norm(Tools.vector_sub(m.mul(solution_old),equations_value),"L1"))
+		print("????????")
 	
 	flow_y=Tools.create_num_array(6,5)
 	flow_x=Tools.create_num_array(5,6)
@@ -185,8 +246,15 @@ func solve():
 	solve_res=res_vel
 	#assert(false)
 
-func _on_PlayButton_pressed():
-	solve()
+func _on_Button_pressed(name):
+	match name:
+		"PLAY":
+			solve("DENSE_INVERSE")
+		"PLAY2":
+			solve("JACOBI")
+		_:
+			assert(false)
+	
 	$SimpleArrow.visible=false
 	$SimpleArrow2.visible=false
 	#print("map")
@@ -213,7 +281,10 @@ func _on_PlayButton_pressed():
 					assert(false)
 				#show_arrow(x,y,Vector2(1.0,-1.0),0.5)
 	moves=true
-	
+		
+func _on_PlayButton_pressed():
+	self._on_Button_pressed("PLAY")
+
 func get_flow(x:float,y:float):
 	if x<0.0 or x>5.0:
 		return Vector2.ZERO
@@ -240,3 +311,7 @@ func _process(delta):
 	#show_arrow(1,1,Vector2(1.0,0.0),0.2)
 	#show_arrow(0,0,Vector2(0.0,1.0),0.4)
 
+
+
+func _on_PlayButton2_pressed():
+	self._on_Button_pressed("PLAY2")
