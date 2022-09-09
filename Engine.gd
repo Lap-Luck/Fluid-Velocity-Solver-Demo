@@ -87,15 +87,38 @@ func raf_solve(eq,way):
 		Tools.vector_norm(Tools.vector_sub(m.mul(res),v),"L1"))
 				$"../HBoxContainer/ButtonPanel/Label_Iteration/value".text=String(Global.data["MI_log"][-1])
 		"JACOBI":
-			var relaxation=0.9
+			var relaxation=0.1
 			
 			var m:Tools.Matrix=eq.get_matrix()
 			var v:PoolRealArray=eq.get_vector()
 			var x:PoolRealArray=Tools.zeros(v.size())
-			for try in range(50*10):
+			for try in range(200):
 				var err=Tools.vector_sub(m.mul(x),v)
 				for i in range(err.size()):
-					x[i]-=relaxation*err[i]/m.get_value(i,i)
+					x[i]-=(1.0-relaxation)*err[i]/m.get_value(i,i)
+			res=x
+			$"../HBoxContainer/ButtonPanel/Label_Error2/value".text=String(
+		Tools.vector_norm(Tools.vector_sub(m.mul(res),v),"L1"))
+		"JACOBI_C":
+			var relaxation=0.5
+			
+			var m:Tools.Matrix=eq.get_matrix()
+			var v:PoolRealArray=eq.get_vector()
+			var x:PoolRealArray=Tools.zeros(v.size())
+			for try2 in range(10):#200->0.2
+				var ITER=20
+				for try in range(ITER):
+					var p=cos(PI/2.0*((2.0*try+1.0)/float(ITER)))
+					#print("root=",p)
+					
+					var err=Tools.vector_sub(m.mul(x),v)
+					for i in range(err.size()):
+						#var r_jacobi=x[i]-0.5*err[i]/m.get_value(i,i)
+						#x[i]=r_jacobi+(x[i]-r_jacobi)*(  (p+1)/(2.0*1.03-1.0-p)  )
+						var id=x[i]
+						var jaco=x[i]-err[i]/m.get_value(i,i)
+						var jaco_0=-0.05+p*0.9
+						x[i]=(jaco-id*jaco_0)/(1.0-jaco_0)
 			res=x
 			$"../HBoxContainer/ButtonPanel/Label_Error2/value".text=String(
 		Tools.vector_norm(Tools.vector_sub(m.mul(res),v),"L1"))
@@ -164,8 +187,11 @@ func solve(way):
 			print("OK")
 			solution=raf_solve(m_system,"DENSE_INVERSE")
 		"JACOBI":
-			print("FAIL")
+			print("OK")
 			solution=raf_solve(m_system,"JACOBI")
+		"JACOBI_C":
+			print("OK_NEW")	
+			solution=raf_solve(m_system,"JACOBI_C")
 		_:
 			assert(false)
 	if false:
@@ -252,6 +278,8 @@ func _on_Button_pressed(name):
 			solve("DENSE_INVERSE")
 		"PLAY2":
 			solve("JACOBI")
+		"PLAY3":
+			solve("JACOBI_C")
 		_:
 			assert(false)
 	
@@ -315,3 +343,7 @@ func _process(delta):
 
 func _on_PlayButton2_pressed():
 	self._on_Button_pressed("PLAY2")
+
+
+func _on_PlayButton3_pressed():
+	self._on_Button_pressed("PLAY3")
