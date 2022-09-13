@@ -171,10 +171,20 @@ class EquationSystem:
 	func get_matrix():
 		var dim=data.size()
 		var res=Matrix.new(dim)
+		var number_of_unknowns:int
 		for row_id in dim:
 			var e:Equation=data[row_id]
 			for i in range(e.variables.size()):
+				if e.variables[i]>=dim:
+					print("Error equation system illdefined")
+					assert(false)
+				number_of_unknowns=max(number_of_unknowns,e.variables[i])
 				res.inc_value(e.variables[i],row_id,e.weights[i])
+		print(number_of_unknowns)
+		if not number_of_unknowns+1==dim:
+			print("Can not convert Equation System with ",number_of_unknowns+1,
+				" to matrix with dim ",dim)
+			assert(false)
 		return res
 	
 	func get_vector():

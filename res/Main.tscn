@@ -390,7 +390,7 @@ margin_left = 23.0
 margin_top = 132.0
 margin_right = 304.0
 margin_bottom = 146.0
-text = "Relaxed(0.9) Jacobi 500 iteration"
+text = "Relaxed(0.9) Jacobi 20 iteration"
 __meta__ = {
 "_edit_use_anchors_": false
 }

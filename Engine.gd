@@ -74,6 +74,7 @@ var flow_x
 var flow_y
 
 func raf_solve(eq,way):
+	
 	var res
 	match way:
 		"DENSE_INVERSE":
@@ -92,7 +93,7 @@ func raf_solve(eq,way):
 			var m:Tools.Matrix=eq.get_matrix()
 			var v:PoolRealArray=eq.get_vector()
 			var x:PoolRealArray=Tools.zeros(v.size())
-			for try in range(200):
+			for try in range(20):
 				var err=Tools.vector_sub(m.mul(x),v)
 				for i in range(err.size()):
 					x[i]-=(1.0-relaxation)*err[i]/m.get_value(i,i)
@@ -105,7 +106,7 @@ func raf_solve(eq,way):
 			var m:Tools.Matrix=eq.get_matrix()
 			var v:PoolRealArray=eq.get_vector()
 			var x:PoolRealArray=Tools.zeros(v.size())
-			for try2 in range(10):#200->0.2
+			for try2 in range(1):#200->0.2
 				var ITER=20
 				for try in range(ITER):
 					var p=cos(PI/2.0*((2.0*try+1.0)/float(ITER)))
@@ -122,6 +123,8 @@ func raf_solve(eq,way):
 			res=x
 			$"../HBoxContainer/ButtonPanel/Label_Error2/value".text=String(
 		Tools.vector_norm(Tools.vector_sub(m.mul(res),v),"L1"))
+		"MULTI_G":
+			pass#TODO MG
 		_:
 			assert(false)
 	return res
@@ -130,7 +133,7 @@ func raf_solve(eq,way):
 func solve(way):
 	assert(ceils_cont==24)
 	assert(map[0][0]==true)
-	var m=Tools.Matrix.new(24)
+	#var m=Tools.Matrix.new(24)
 	var m_system=Tools.EquationSystem.new()
 	
 	#Very ceil has spash(preshure) it is amount of staf sent to its nerboiurs
@@ -143,25 +146,26 @@ func solve(way):
 	#
 	var equations_value=Tools.pool_of_zeros(24)
 	
+	var break_check=true if way!="DENSE_INVERSE" else false
+	var equation_id=0 if not break_check else -1
+	#m.set_value(global_ceils_id[[0,0]],equation_id,1.0)
 	
-	var equation_id=0
-	m.set_value(global_ceils_id[[0,0]],equation_id,1.0)
-	m_system.add(Tools.Equation.new().add(global_ceils_id[[0,0]],1.0))
-	equations_value[equation_id]=0.0
+	if not break_check:m_system.add(Tools.Equation.new().add(global_ceils_id[[0,0]],1.0))
+	if not break_check:equations_value[equation_id]=0.0
 	for x in range(5):
 		for y in range(5):
 			var eq=Tools.Equation.new()
-			if x==0 and y==0: continue
+			if not break_check:if x==0 and y==0: continue
 			if not map[y][x]: continue
 			equation_id+=1
-			m.set_value(global_ceils_id[[x,y]],equation_id,-1.0)
+			#m.set_value(global_ceils_id[[x,y]],equation_id,-1.0)
 			eq.add(global_ceils_id[[x,y]],-1.0)
 			for near in near_ceils[[x,y]]:
 				var near_near_count=near_ceils[near].size()
 				if near_near_count==0:
 					print("Error no conncted to:",near)
 					assert(false)
-				m.set_value(global_ceils_id[near],equation_id,1.0/float(near_near_count))
+				#m.set_value(global_ceils_id[near],equation_id,1.0/float(near_near_count))
 				eq.add(global_ceils_id[near],1.0/float(near_near_count))
 			m_system.add(eq)
 			equations_value[equation_id]=0.0
@@ -181,6 +185,9 @@ func solve(way):
 		#print(e)
 		e.value=equations_value[i]
 		
+	var ceils_sets=[]#TODO MG
+	print(m_system)
+	
 	var solution
 	match way:
 		"DENSE_INVERSE":
@@ -195,24 +202,24 @@ func solve(way):
 		_:
 			assert(false)
 	if false:
-		var m2=m_system.get_matrix()
+		#var m2=m_system.get_matrix()
 
 		print("Created equation")
-		print(m2)
+		#print(m2)
 		print("*UNKOWN=",equations_value)
 		print("trying to solve....")
-		var back_d=m.data.duplicate()
-		m2.inverse()
+		#var back_d=m.data.duplicate()
+		#m2.inverse()
 
 		#print(m)
-		var solution_old=m2.mul(equations_value)
-		print(solution_old)
-		m2.data=back_d
+		#var solution_old=m2.mul(equations_value)
+		#print(solution_old)
+		#m2.data=back_d
 		print("equation check")
-		print(m.mul(solution_old))
-		$"../HBoxContainer/ButtonPanel/Label_Error/value".text=String(
-			Tools.vector_norm(Tools.vector_sub(m.mul(solution_old),equations_value),"L1"))
-		print("????????")
+		#print(m.mul(solution_old))
+		#$"../HBoxContainer/ButtonPanel/Label_Error/value".text=String(
+		#	Tools.vector_norm(Tools.vector_sub(m.mul(solution_old),equations_value),"L1"))
+		#print("????????")
 	
 	flow_y=Tools.create_num_array(6,5)
 	flow_x=Tools.create_num_array(5,6)
