@@ -73,7 +73,7 @@ var solve_res=[]
 var flow_x
 var flow_y
 
-func raf_solve(eq,way):
+func raf_solve(eq,way,data=[]):
 	
 	var res
 	match way:
@@ -124,7 +124,49 @@ func raf_solve(eq,way):
 			$"../HBoxContainer/ButtonPanel/Label_Error2/value".text=String(
 		Tools.vector_norm(Tools.vector_sub(m.mul(res),v),"L1"))
 		"MULTI_G":
-			pass#TODO MG
+			var sets=data
+			var simply_eq=Tools.EquationSystem.new()
+			for set_id in range(sets.size()):
+				var s_e=Tools.Equation.new()
+				var set=sets[set_id]
+				for id in set:
+					var eqation:Tools.Equation=eq.data[id]
+					for v_id in range(eqation.variables.size()):
+						var v_set=Tools.in_what_set(sets,eqation.variables[v_id])
+						if v_set==-1:
+							assert(false)
+						s_e.add(v_set,eqation.weights[v_id]/float(set.size()))
+				simply_eq.add(s_e)
+				for id in set:
+					s_e.value+=eq.data[id].value/float(set.size())
+			print("@@@@@@@@@@@@")
+			print(eq)
+			print("@@@@@@@@@@@@")
+			print(simply_eq)
+			
+			var simply_sol=raf_solve(simply_eq,"JACOBI")
+			
+			var x:PoolRealArray=Tools.zeros(eq.get_vector().size())
+			for set_id in range(sets.size()):
+				for id in sets[set_id]:
+					x[id]=simply_sol[set_id]
+			res=x
+			
+	
+			if true:#jacobi
+				var relaxation=0.1
+				
+				var m:Tools.Matrix=eq.get_matrix()
+				var v:PoolRealArray=eq.get_vector()
+				#var x:PoolRealArray=Tools.zeros(v.size())
+				for try in range(10):
+					var err=Tools.vector_sub(m.mul(x),v)
+					for i in range(err.size()):
+						x[i]-=(1.0-relaxation)*err[i]/m.get_value(i,i)
+				res=x
+
+				
+			
 		_:
 			assert(false)
 	return res
@@ -186,6 +228,25 @@ func solve(way):
 		e.value=equations_value[i]
 		
 	var ceils_sets=[]#TODO MG
+	for vx in range(2):
+		for vy in range(2):
+			ceils_sets.append([global_ceils_id[[0+3*vx,0+3*vy]],
+								global_ceils_id[[1+3*vx,0+3*vy]],
+								global_ceils_id[[0+3*vx,1+3*vy]],
+								global_ceils_id[[1+3*vx,1+3*vy]],
+								])
+	ceils_sets.append([global_ceils_id[[2-1,2]],
+						global_ceils_id[[2-2,2]]
+						])
+	ceils_sets.append([global_ceils_id[[2+1,2]],
+						global_ceils_id[[2+2,2]]
+						])
+	ceils_sets.append([global_ceils_id[[2,2-1]],
+						global_ceils_id[[2,2-2]]
+						])
+	ceils_sets.append([global_ceils_id[[2,2+1]],
+						global_ceils_id[[2,2+2]]
+						])
 	print(m_system)
 	
 	var solution
@@ -199,6 +260,9 @@ func solve(way):
 		"JACOBI_C":
 			print("OK_NEW")	
 			solution=raf_solve(m_system,"JACOBI_C")
+		"JACOBI_MG":
+			print("OK_NEW")	
+			solution=raf_solve(m_system,"MULTI_G",ceils_sets)
 		_:
 			assert(false)
 	if false:
@@ -287,6 +351,8 @@ func _on_Button_pressed(name):
 			solve("JACOBI")
 		"PLAY3":
 			solve("JACOBI_C")
+		"PLAY4":
+			solve("JACOBI_MG")
 		_:
 			assert(false)
 	
@@ -354,3 +420,7 @@ func _on_PlayButton2_pressed():
 
 func _on_PlayButton3_pressed():
 	self._on_Button_pressed("PLAY3")
+
+
+func _on_PlayButton4_pressed():
+	self._on_Button_pressed("PLAY4")

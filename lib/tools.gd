@@ -298,6 +298,15 @@ func _ready():
 	if m.mul(PoolRealArray([1,0]))[1]!=-0.5:
 		print("err",m.mul(PoolRealArray([1,0])))
 		assert(false)
+
+#example in_what_set([[1,2,3][10,20,30]],20)==1 (set id)
+func in_what_set(sets,element):
+	for i in range(sets.size()):
+		if element in sets[i]:
+			return i
+	print("Count not find ",element," in ",sets)
+	return -1
+
 #[10,3]
 #[1,10]
 
