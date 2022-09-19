@@ -315,6 +315,16 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="DemoButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+margin_left = 174.0
+margin_top = 439.0
+margin_right = 281.0
+margin_bottom = 459.0
+text = "show_sim"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="Label_Error" type="Label" parent="HBoxContainer/ButtonPanel"]
 margin_left = 236.0
 margin_top = 78.0
@@ -447,3 +457,4 @@ texture = ExtResource( 3 )
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/PlayButton2" to="Engine" method="_on_PlayButton2_pressed"]
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/PlayButton4" to="Engine" method="_on_PlayButton4_pressed"]
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/PlayButton3" to="Engine" method="_on_PlayButton3_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonPanel/DemoButton" to="Engine" method="_on_DemoButton_pressed"]
