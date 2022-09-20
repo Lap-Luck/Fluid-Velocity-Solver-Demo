@@ -424,3 +424,7 @@ func _on_PlayButton3_pressed():
 
 func _on_PlayButton4_pressed():
 	self._on_Button_pressed("PLAY4")
+
+
+func _on_DemoButton_pressed():
+	get_tree().change_scene("res://res/grow_demo/Fluid_add.tscn")
