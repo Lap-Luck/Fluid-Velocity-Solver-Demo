@@ -15,7 +15,6 @@ func set_shape(shape:Rect2):
 			for id in range(p.polygon.size()):
 				p.polygon[id]=shape_scale*p.polygon[id]
 			
-
 func set_color(color):
 	for l in self.get_children():
 		if l is Line2D:
@@ -23,6 +22,16 @@ func set_color(color):
 
 var fill_value:float=0.0
 func fill(value):
+	if value>0.9:
+		$Polygon2D.color=Color.blue
+		if value>1.1:
+			$Polygon2D.color=Color.yellow
+			if value>1.5:
+				$Polygon2D.color=Color.red
+	else:
+		$Polygon2D.color=Color.white
+		if value<0.0:
+			$Polygon2D.color=Color.black
 	$Polygon2D.visible=true
 	$Polygon2D.scale.y=value
 
