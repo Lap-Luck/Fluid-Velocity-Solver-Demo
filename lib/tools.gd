@@ -168,6 +168,15 @@ class EquationSystem:
 			else:
 				res+=data[i]._to_string()+"\n"
 		return res
+	#NEW!!!!!!
+	func get_diagonal_cooficients():
+		var res=[]
+		for e_id in range(data.size()):
+			var to_res=0.0
+			for id in range(data[e_id].variables.size()):
+				to_res+=data[e_id].weights[id] if data[e_id].variables[id]==e_id else 0.0
+			res.append(to_res)
+		return res
 	func get_matrix():
 		var dim=data.size()
 		var res=Matrix.new(dim)

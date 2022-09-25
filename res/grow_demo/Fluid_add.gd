@@ -77,6 +77,60 @@ func add_ceil(x:int,y:int,color=null,size_x:int=1,size_y:int=1,unit_scale=50.0):
 		new_ceil.set_color(color)
 	return new_ceil
 
+class grid_dict:
+	var pos2id:Array
+	var size:int
+	var values
+	
+	func _init(dim:int):
+		pos2id=Tools.zeros(dim*dim)
+		values=[null]#for first unused elemnt
+		size=dim
+	
+	func add2(x:int,y:int,value):
+		var id=values.size()
+		values.append(value)
+		pos2id[x+y*size]=id
+	
+	func data(x:int,y:int):
+		return values[pos2id[x+y*size]]
+	
+	func _to_string():
+		var dic={}
+		for x in range(size):
+			dic[x]={}
+			for y in range(size):
+				if not pos2id[x+y*size]==0:
+					dic[x][y]=values[pos2id[x+y*size]]
+		return String(dic)
+				
+	func from_dictionary(d:Dictionary,size:int):
+		
+		#var res=grid_dict.new(size)
+		
+		var ks=d.keys()
+		var vs=d.values()
+		if vs.size()==0:
+			assert(false)
+		if vs[0] is Dictionary:
+			#data is represteted as x dictionary na y subdictionary
+			#A B
+			#C D
+			#is saved as {0:{0:A,1:C},1:{0:B,1:D}}
+			for id in range(ks.size()):
+				var x=ks[id]
+				var d2=vs[id]
+				for id2 in range(d2.size()):
+					var y=d2.keys()[id2]
+					var value=d2.values()[id2]
+					add2(x,y,value)
+		else:
+			print("TODO")
+			assert(false)
+		#print("from",d)
+		#print("res",self)
+		return self
+
 var tab:={}
 func _ready():
 	init_grid()
@@ -86,6 +140,7 @@ func _ready():
 			for y in range(1,20+1):
 				tab[x][y]=add_ceil(x,y,Color(256,0,0))
 		add_ceil(1,1,Color(0,0,0),20,20)
+	my_grid=grid_dict.new(21).from_dictionary(tab,21)
 
 func is_overflow(x:int,y:int,var t:float=0.0):
 	#is this cell contected to cell that has over 1.0 fill value
@@ -95,53 +150,117 @@ func is_overflow(x:int,y:int,var t:float=0.0):
 			return true
 	return false
 
+var  my_grid
+
 func normalize_fluid(x:int,y:int):
+	var times={}
+	
 	var near_xy=query_grid(x,y,"FULL")
 	var eqautions:Tools.EquationSystem=Tools.EquationSystem.new()
-	for n_id in range(near_xy.size()):
-		var e:Tools.Equation=Tools.Equation.new()
-		var nx=int(near_xy[n_id].x)
-		var ny=int(near_xy[n_id].y)
-		e.add(n_id,float(neibour_size(nx,ny)))
-		for vec in [Vector2(-1,0),Vector2(1,0),Vector2(0,-1),Vector2(0,1)]:
-			if near_xy[n_id]+vec in near_xy:
-				var n2_id=near_xy.find(near_xy[n_id]+vec)
-				e.add(n2_id,-1.0)
-
-		e.value=tab[nx][ny].fill_value-1.0
-		eqautions.add(e)
+	
+	
+	times["start"]=OS.get_ticks_usec()
+	if true:
+		for n_id in range(near_xy.size()):
+			var e:Tools.Equation=Tools.Equation.new()
+			var nx=int(near_xy[n_id].x)
+			var ny=int(near_xy[n_id].y)
+			e.add(n_id,float(neibour_size(nx,ny)))
+			for vec in [Vector2(-1,0),Vector2(1,0),Vector2(0,-1),Vector2(0,1)]:
+				if near_xy[n_id]+vec in near_xy:
+					var n2_id=near_xy.find(near_xy[n_id]+vec)
+					e.add(n2_id,-1.0)
+			e.value=tab[nx][ny].fill_value-1.0
+			eqautions.add(e)
+		
+		times["t1A"]=OS.get_ticks_usec()
+		#print("<TIMEA>:",OS.get_ticks_usec()-btime,"us")
+	times["t1B"]=OS.get_ticks_usec()
+	#print("<TIME>	eqation created in:",OS.get_ticks_usec()-stime,"us")
 	#print("normalize")
 	#print(near_xy)
 	#print(eqautions)
-	var water_spash:PoolRealArray=raf_solve(eqautions,"JACOBI")
-	for n_id in range(near_xy.size()):
-		var nx=int(near_xy[n_id].x)
-		var ny=int(near_xy[n_id].y)
-		var spash=water_spash[n_id]
-		tab[nx][ny].fill_value-=spash*neibour_size(nx,ny)
-		var near=neibour_ids(nx,ny)
-		assert(near.size()==neibour_size(nx,ny))
-		for n_xy in near:
-			tab[n_xy[0]][n_xy[1]].fill_value+=spash
+	if true:
+		var water_spash:PoolRealArray=raf_solve(eqautions,solver)
+		var btime=OS.get_ticks_usec()
+		times["t2"]=OS.get_ticks_usec()
+		#print("<#2>:",OS.get_ticks_usec()-stime,"us")
+		for n_id in range(near_xy.size()):
+			var nx=int(near_xy[n_id].x)
+			var ny=int(near_xy[n_id].y)
+			var spash=water_spash[n_id]
+			tab[nx][ny].fill_value-=spash*neibour_size(nx,ny)
+			var near=neibour_ids(nx,ny)
+			assert(near.size()==neibour_size(nx,ny))
+			for n_xy in near:
+				tab[n_xy[0]][n_xy[1]].fill_value+=spash
+		
+		times["t3A"]=OS.get_ticks_usec()
+		#print("<TIMEB>:",OS.get_ticks_usec()-btime,"us")
+	else:
+		
+		
+		var water_spash:PoolRealArray=raf_solve(eqautions,"JACOBI")
+		times["t2"]=OS.get_ticks_usec()
+		for n_id in range(near_xy.size()):
+			var nx=int(near_xy[n_id].x)
+			var ny=int(near_xy[n_id].y)
+			var spash=water_spash[n_id]
+			my_grid.data(nx,ny).fill_value-=spash*neibour_size(nx,ny)
+			var near=neibour_ids(nx,ny)
+			assert(near.size()==neibour_size(nx,ny))
+			for n_xy in near:
+				my_grid.data(n_xy[0],n_xy[1]).fill_value+=spash
+			times["t3A"]=OS.get_ticks_usec()
+	times["t3B"]=OS.get_ticks_usec()
+	for k in times.keys():
+		print("<#TIME>",k,"=",times[k]-times["start"])
+	#print("<TIME>	normalize in:",OS.get_ticks_usec()-stime,"us")
 		
 		
 func raf_solve(eq,way):
+	var stime=OS.get_ticks_usec()
 	
+	#NEW!!!!
 	var res
 	match way:
 		"JACOBI":
+			var relaxation=0.1
+			var dim=eq.data.size()
+			var x:PoolRealArray=Tools.zeros(dim)
+			var digolnal=eq.get_diagonal_cooficients()
+			if false:
+				print("##############")
+				print(eq)
+				print(digolnal)
+				print("##############")
+			for try in range(10):
+				for equation_id in range(dim):
+					var e:Tools.Equation=eq.data[equation_id]
+					var value:float=e.value
+					var variables=e.variables
+					var weights=e.weights
+					
+					var c_value=0.0
+					for id in range(variables.size()):
+						c_value+=x[variables[id]]*weights[id]
+					x[equation_id]+=(1.0-relaxation)*(value-c_value)/digolnal[equation_id]
+			res=x
+		
+		"JACOBI2":
 			var relaxation=0.1
 			
 			var m:Tools.Matrix=eq.get_matrix()
 			var v:PoolRealArray=eq.get_vector()
 			var x:PoolRealArray=Tools.zeros(v.size())
-			for try in range(30):
+			for try in range(10):
 				var err=Tools.vector_sub(m.mul(x),v)
 				for i in range(err.size()):
 					x[i]-=(1.0-relaxation)*err[i]/m.get_value(i,i)
 			res=x
 		_:
 			assert(false)
+	print("<TIME>	solve step took:",OS.get_ticks_usec()-stime,"us")
 	return res
 		
 
@@ -173,17 +292,31 @@ func add_fluid(x:int,y:int,v:float):
 		#	for n in near:
 		#		add_fluid(n[0],n[1],overflow/near.size())
 	
-
+var solver="none"
 func click(pos:Vector2):
-	var x=int(floor(pos.x/50.0))
-	var y=int(floor(pos.y/50.0))
-	print("click at ",x,",",y)
-	if tab.has(x):
-		if tab.has(y):
-			#tab[x][y].visible=false
-			self.add_fluid(x,y,2.1)
-			
-	
+	match solver:
+		"JACOBI":
+			var stime=OS.get_ticks_usec()
+			var x=int(floor(pos.x/50.0))
+			var y=int(floor(pos.y/50.0))
+			print("click at ",x,",",y)
+			if tab.has(x):
+				if tab.has(y):
+					#tab[x][y].visible=false
+					self.add_fluid(x,y,20.1)
+					
+			print("<TIME>	sim step took:",OS.get_ticks_usec()-stime,"us")
+		"JACOBI2":
+			var stime=OS.get_ticks_usec()
+			var x=int(floor(pos.x/50.0))
+			var y=int(floor(pos.y/50.0))
+			print("click at ",x,",",y)
+			if tab.has(x):
+				if tab.has(y):
+					#tab[x][y].visible=false
+					self.add_fluid(x,y,20.1)
+					
+			print("<TIME>	sim step took:",OS.get_ticks_usec()-stime,"us")
 	#for c in get_children():
 	
 	#	if c is Node2D:

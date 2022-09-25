@@ -21,19 +21,28 @@ func set_color(color):
 			l.default_color=color
 
 var fill_value:float=0.0
+var to_fill
+var fill_nedded:bool=false
 func fill(value):
-	if value>0.9:
-		$Polygon2D.color=Color.blue
-		if value>1.1:
-			$Polygon2D.color=Color.yellow
-			if value>1.5:
-				$Polygon2D.color=Color.red
-	else:
-		$Polygon2D.color=Color.white
-		if value<0.0:
-			$Polygon2D.color=Color.black
-	$Polygon2D.visible=true
-	$Polygon2D.scale.y=value
+	to_fill=value
+	fill_value=value
+	fill_nedded=true
+func _process(delta):
+	if fill_nedded:
+		fill_nedded=false
+		var value=to_fill
+		if value>0.9:
+			$Polygon2D.color=Color.blue
+			if value>1.1:
+				$Polygon2D.color=Color.yellow
+				if value>1.5:
+					$Polygon2D.color=Color.red
+		else:
+			$Polygon2D.color=Color.white
+			if value<0.0:
+				$Polygon2D.color=Color.black
+		$Polygon2D.visible=true
+		$Polygon2D.scale.y=value
 
 func _ready():
 	if false:
