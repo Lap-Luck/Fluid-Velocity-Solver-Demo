@@ -52,5 +52,27 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="SaveButton" type="Button" parent="."]
+margin_left = 1.0
+margin_top = 22.0
+margin_right = 115.0
+margin_bottom = 42.0
+text = "save grid"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="FileSAvedDialog" type="AcceptDialog" parent="."]
+visible = true
+margin_left = 442.0
+margin_top = 241.0
+margin_right = 525.0
+margin_bottom = 299.0
+dialog_text = "File Saved"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [connection signal="pressed" from="Button" to="PopupMenu2" method="_on_Button_pressed"]
 [connection signal="id_pressed" from="PopupMenu2" to="PopupMenu2" method="_on_PopupMenu2_id_pressed"]
+[connection signal="pressed" from="SaveButton" to="." method="_on_SaveButton_pressed"]

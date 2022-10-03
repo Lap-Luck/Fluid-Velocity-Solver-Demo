@@ -332,3 +332,30 @@ func _input(event):
 			if event.pressed:
 				var pos=get_viewport().get_mouse_position()
 				click(pos)
+
+
+
+
+func _on_SaveButton_pressed():
+	var file="""# vtk DataFile Version 5.1
+vtk output
+ASCII
+DATASET STRUCTURED_POINTS
+DIMENSIONS 20 20 1
+SPACING 0.1 0.1 0.1
+ORIGIN -0.5 -0.5 0
+POINT_DATA 400
+SCALARS my_value float
+LOOKUP_TABLE default
+"""
+	for y in range(1,20+1):
+		for x in range(1,20+1):
+			file+=String(tab[x][y].fill_value)+" "
+			#print(tab[x][y].fill_value)
+		file+="\n"
+	print(file)
+	var f=File.new()
+	f.open("res://save.vtk",File.WRITE)
+	f.store_string(file)
+	f.close()
+	$FileSAvedDialog.popup()
