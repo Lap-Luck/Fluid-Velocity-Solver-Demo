@@ -19,14 +19,21 @@ func register_grid(x:int,y:int):
 	self.grid32[x][y]=1
 
 func neibour_size(x:int,y:int):
-	return 4-int(x>=32)-int(x<0)-int(y>=32)-int(y<0)
+	return 4-int(is_edge(x+1,y))-int(
+				is_edge(x-1,y))-int(is_edge(x,y+1))-int(is_edge(x,y-1))
+	#return 4-int(x>=32)-int(x<0)-int(y>=32)-int(y<0)
 	
 func neibour_ids(x:int,y:int,as_vec=false):
 	var res=[]
-	res.append_array([[x+1,y]] if x+1 in range(32) else [])
-	res.append_array([[x-1,y]] if x-1 in range(32) else [])
-	res.append_array([[x,y+1]] if y+1 in range(32) else [])
-	res.append_array([[x,y-1]] if y-1 in range(32) else [])
+	#res.append_array([[x+1,y]] if x+1 in range(32) else [])
+	#res.append_array([[x-1,y]] if x-1 in range(32) else [])
+	#res.append_array([[x,y+1]] if y+1 in range(32) else [])
+	#res.append_array([[x,y-1]] if y-1 in range(32) else [])
+	res.append_array([[x+1,y]] if not is_edge(x+1,y) else [])
+	res.append_array([[x-1,y]] if not is_edge(x-1,y) else [])
+	res.append_array([[x,y+1]] if not is_edge(x,y+1) else [])
+	res.append_array([[x,y-1]] if not is_edge(x,y-1) else [])	
+	
 	if as_vec:
 		var res_v=[]
 		for r in res:
@@ -52,8 +59,9 @@ func query_grid(x:int,y:int,query)->Array:
 				for n in nears:
 					if not visted.find(n)>=0:
 						if not to_vist.find(n)>=0:
-							if tab[int(n[0])][int(n[1])].fill_value>=1.0:
-								to_vist.append(n)
+							if not is_edge(int(n[0]),int(n[1])):
+								if tab[int(n[0])][int(n[1])].fill_value>=1.0:
+									to_vist.append(n)
 			#if visted.size()>5:
 			#	print("DEBUG")
 			#	print(history)
@@ -132,6 +140,13 @@ class grid_dict:
 		return self
 
 var tab:={}
+func is_edge(x,y):
+	if x<=1: return true
+	if x>=20: return true
+	if y<=1: return true
+	if y>=20: return true
+	return false
+
 func _ready():
 	init_grid()
 	if true:
@@ -234,7 +249,7 @@ func raf_solve(eq,way):
 				print(eq)
 				print(digolnal)
 				print("##############")
-			for try in range(10):
+			for try in range(60):
 				for equation_id in range(dim):
 					var e:Tools.Equation=eq.data[equation_id]
 					var value:float=e.value
@@ -265,7 +280,8 @@ func raf_solve(eq,way):
 		
 
 func _add_fluid(x:int,y:int,v:float):
-	tab[x][y].fill_value+=v
+	if not is_edge(x,y):
+		tab[x][y].fill_value+=v
 	
 func update_fluid():
 	for x in range(1,20+1):
