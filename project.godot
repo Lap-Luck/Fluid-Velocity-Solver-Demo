@@ -10,14 +10,9 @@ config_version=4
 
 [application]
 
-config/name="Fluid Velocity Solver"
-run/main_scene="res://res/Main.tscn"
-config/icon="res://res/icon.png"
-
-[autoload]
-
-Tools="*res://lib/tools.gd"
-Global="*res://lib/Global.gd"
+config/name="Grid Editor"
+run/main_scene="res://data/Munu.tscn"
+config/icon="res://data/icon.png"
 
 [physics]
 
@@ -25,4 +20,4 @@ common/enable_pause_aware_picking=true
 
 [rendering]
 
-environment/default_environment="res://res/default_env.tres"
+environment/default_environment="res://data/default_env.tres"

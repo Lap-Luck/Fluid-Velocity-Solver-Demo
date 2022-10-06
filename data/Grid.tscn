@@ -1,0 +1,54 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://GridDraw.gd" type="Script" id=1]
+
+[node name="Node" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="GridDraw" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="setings" type="ColorRect" parent="."]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -174.0
+margin_bottom = 166.0
+color = Color( 0, 1, 1, 1 )
+
+[node name="SpinBox" type="SpinBox" parent="setings"]
+margin_left = 84.0
+margin_top = 25.0
+margin_right = 158.0
+margin_bottom = 49.0
+min_value = 2.0
+value = 2.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Button" type="Button" parent="setings"]
+margin_left = 27.0
+margin_top = 111.0
+margin_right = 150.0
+margin_bottom = 131.0
+text = "generate"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CheckBox" type="CheckBox" parent="setings"]
+margin_left = 119.0
+margin_top = 70.0
+margin_right = 143.0
+margin_bottom = 94.0
+
+[connection signal="pressed" from="setings/Button" to="GridDraw" method="_on_Button_pressed"]
