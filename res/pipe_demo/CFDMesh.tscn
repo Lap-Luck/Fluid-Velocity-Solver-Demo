@@ -1,0 +1,36 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://res/pipe_demo/CFD_GRID.gd" type="Script" id=1]
+[ext_resource path="res://res/pipe_demo/CFDMesh.gd" type="Script" id=2]
+
+[node name="Mesh" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CFD_GRID" type="Node2D" parent="."]
+script = ExtResource( 1 )
+
+[node name="CFD_BOUNDARY" type="Node" parent="CFD_GRID"]
+
+[node name="Inlet" type="Line2D" parent="CFD_GRID/CFD_BOUNDARY"]
+visible = false
+points = PoolVector2Array( 100, 100, 100, 300 )
+default_color = Color( 1, 0.4, 0.4, 1 )
+
+[node name="outlet" type="Line2D" parent="CFD_GRID/CFD_BOUNDARY"]
+visible = false
+points = PoolVector2Array( 700, 100, 700, 500 )
+
+[node name="wall" type="Line2D" parent="CFD_GRID/CFD_BOUNDARY"]
+visible = false
+points = PoolVector2Array( 700, 500, 500, 500, 500, 300, 100, 300 )
+default_color = Color( 0.392157, 0.392157, 0.392157, 1 )
+
+[node name="wall2" type="Line2D" parent="CFD_GRID/CFD_BOUNDARY"]
+visible = false
+points = PoolVector2Array( 100, 100, 700, 100 )
+default_color = Color( 0.392157, 0.392157, 0.392157, 1 )
