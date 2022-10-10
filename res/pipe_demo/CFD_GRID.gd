@@ -5,6 +5,7 @@ class Boundary:
 	var name:String
 	var points:PoolVector2Array
 	var color:Color
+	var boundary:Dictionary
 
 
 func _ready():
@@ -37,6 +38,7 @@ func _tab_update():
 			
 			var b=Boundary.new()
 			b.color=line2d.default_color
+			b.boundary={"vb":line2d.vb,"v":line2d.v,"pb":line2d.pb,"p":line2d.p}
 			b.name=line2d.name
 			boundaries.append(b)
 			
@@ -85,6 +87,8 @@ func _draw():
 				draw_rect(Rect2(Vector2(i_x*DX,i_y*DY),Vector2(DX,DY)),
 					color.darkened(0.1) if ((i_x+i_y)%2==0) else color.darkened(0.2))
 
+func get_b_data(x,y):
+	return boundaries[tab[x][y]].boundary
 
 func _process(delta):
 	if refresh:

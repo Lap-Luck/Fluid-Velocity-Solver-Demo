@@ -428,3 +428,7 @@ func _on_PlayButton4_pressed():
 
 func _on_DemoButton_pressed():
 	get_tree().change_scene("res://res/grow_demo/Fluid_add.tscn")
+
+
+func _on_DemoButton2_pressed():
+	get_tree().change_scene("res://res/pipe_demo/CFDMesh.tscn")
