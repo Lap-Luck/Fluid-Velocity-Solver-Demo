@@ -1,5 +1,15 @@
 extends Node
 
+#func append_to_dictionary_of_arrays(d:Dictionary,key,element):
+#	d[key]=d.get(key,[]).append(element)
+
+
+
+func dictionary_get(d:Dictionary,key,default):
+	if d.has(key):
+		return d[key]
+	return default
+
 func create_num_array(a:int,b:int=-1):
 	if b==-1:
 		var res=[]
