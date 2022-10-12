@@ -9,6 +9,8 @@ class Boundary:
 
 
 func _ready():
+	if not Engine.editor_hint:
+		visible=false
 	_tab_update()
 
 var tab = [] #Use to store ids of thing thath ocupies this cell

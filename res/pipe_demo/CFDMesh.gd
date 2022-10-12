@@ -56,6 +56,21 @@ func _ready():
 	print("START")
 	simulate()
 	print("DONE")
+	
+onready var RES_X = $CFD_GRID.RES_X
+onready var RES_Y = $CFD_GRID.RES_Y
+onready var DX = $CFD_GRID.DX
+onready var  DY = $CFD_GRID.DY
+
+func _draw():
+	for x in range(mesh.size()):
+		for y in range(mesh[0].size()):
+			if mesh[x][y] is Cell:
+				var me=mesh[x][y]
+				if me.data.has("p"):
+						draw_rect(Rect2(Vector2(x*DX,y*DY),Vector2(DX,DY)),
+						Color(me.data["p"]/10.0,0.0,0.0))
+
 
 func number_of_cells_in_mesh():
 	var res=0
