@@ -20,6 +20,43 @@ class Cell:
 	var b_right:Dictionary={}
 	var b_left:Dictionary={}
 	
+class VKT_File:
+	var quads=[]
+	func draw_quad(a:Vector2,b:Vector2,c:Vector2,d:Vector2,v:Dictionary):
+		quads.append([a,b,c,d,v])
+	func save(name:String):
+		
+		var fdata="""# vtk DataFile Version 1.0
+2D Unstructured Grid of Linear Triangles
+ASCII
+DATASET UNSTRUCTURED_GRID\n"""
+		
+		#save mesh
+		fdata+="POINTS "+String(4*quads.size())+" float"+"\n"
+		for q in quads:
+			for axis in range(4):
+				fdata+=String(q[axis].x)+" "+String(q[axis].y)+" "+"0"+"\n"
+		fdata+="CELLS "+String(quads.size())+" "+String(5*quads.size())+"\n"
+		for id in range(quads.size()):
+			fdata+="4 "+String(4*id)+" "+String(4*id+1)+" "+String(4*id+2)+" "+String(4*id+3)+"\n"
+		fdata+="CELL_TYPES "+String(quads.size())+"\n"
+		for id in range(quads.size()):
+			fdata+="9\n"
+		fdata+="CELL_DATA "+String(quads.size())+"\n"
+		
+		#save data
+		for key in quads[0][4].keys():
+			fdata+="SCALARS "+key+" float\n"
+			fdata+="LOOKUP_TABLE default\n"
+			for q in quads:
+				var value:float=q[4][key]
+				fdata+=String(value)+" "
+		
+		#commit file to OS
+		var f=File.new()
+		f.open("res://"+name,File.WRITE)
+		f.store_string(fdata)
+		f.close()
 
 func _ready():
 	mesh=$CFD_GRID.tab.duplicate(true)
@@ -80,43 +117,18 @@ func number_of_cells_in_mesh():
 	return res
 
 func save():
-	var fdata="""# vtk DataFile Version 1.0
-2D Unstructured Grid of Linear Triangles
-ASCII
-DATASET UNSTRUCTURED_GRID\n"""
-	fdata+="POINTS "+String(4*number_of_cells_in_mesh())+" float"+"\n"
+	var f=VKT_File.new()
 	for l in mesh:
 		for c in l:
 			if c is Cell:
-				for m in [[0,0],[0,1],[1,1],[1,0]]:
-					fdata+=String(c.x+m[0])+" "+String(c.y+m[1])+" "+"0"+"\n"
-	fdata+="CELLS "+String(number_of_cells_in_mesh())+" "+String(5*number_of_cells_in_mesh())+"\n"
-	var id=0
-	for l in mesh:
-		for c in l:
-			if c is Cell:
-				fdata+="4 "+String(4*id)+" "+String(4*id+1)+" "+String(4*id+2)+" "+String(4*id+3)+"\n"
-				id+=1
-	fdata+="CELL_TYPES "+String(number_of_cells_in_mesh())+"\n"
-	for l in mesh:
-		for c in l:
-			if c is Cell:
-				fdata+="9\n"
-	fdata+="CELL_DATA "+String(number_of_cells_in_mesh())+"\n"
-	fdata+="""SCALARS pressure float
-LOOKUP_TABLE default\n"""
-	for l in mesh:
-		for c in l:
-			if c is Cell:
-				var value=0.0
-				if (c.x+c.y)%2==0:
-					value=1.0
-				fdata+=String(value)+" "
-	#print(fdata)
-	var f=File.new()
-	f.open("res://save2.vtk",File.WRITE)
-	f.store_string(fdata)
-	f.close()
+				f.draw_quad(Vector2(c.x,c.y),
+							Vector2(c.x,c.y+1),
+							Vector2(c.x+1,c.y+1),
+							Vector2(c.x+1,c.y),
+							{"parity":0.0 if (c.x+c.y)%2==0 else 1.0})
+	f.save("test.vtk")
+	
+	
 
 func my_avg(a,b,c,d):
 	var sum=0.0
@@ -133,7 +145,7 @@ func simulate():
 			if mesh[x][y] is Cell:
 				mesh[x][y].data["p"]=0.0
 				mesh[x][y].data["v"]=Vector2.ZERO
-	for t in range(1000):
+	for t in range(100):
 		print("Iteration=",t)
 		for x in range(mesh.size()):
 			for y in range(mesh[0].size()):
@@ -165,38 +177,30 @@ func simulate():
 					var p_left=me.left.data["p"] if not me.left==null else (me.b_left["p"] if me.b_left["pb"] else null)
 					error+=my_avg(p_up,p_down,p_right,p_left)-me.data["p"]
 		print("computation error=",error)
+		
+	#####################
+	for x in range(mesh.size()):
+		for y in range(mesh[0].size()):
+			if mesh[x][y] is Cell:
+				var me=mesh[x][y]
+				var v=me.data["v"]
+				var p=me.data["p"]
+				var grad_p=Vector2.ZERO
+				if me.up!=null and me.down!=null:
+					 grad_p.y=me.up.data["p"]-me.down.data["p"]
+				elif me.up!=null and me.down==null:
+					 grad_p.y=me.up.data["p"]-me.data["p"]
+				elif me.up!=null and me.down==null:
+					 grad_p.y=me.up.data["p"]-me.data["p"]
+	##########################
+	var f=VKT_File.new()
+	for l in mesh:
+		for c in l:
+			if c is Cell:
+				f.draw_quad(Vector2(c.x,c.y),
+							Vector2(c.x,c.y+1),
+							Vector2(c.x+1,c.y+1),
+							Vector2(c.x+1,c.y),
+							{"pressure":c.data["p"]})
+	f.save("save3.vtk")
 	
-	var fdata="""# vtk DataFile Version 1.0
-2D Unstructured Grid of Linear Triangles
-ASCII
-DATASET UNSTRUCTURED_GRID\n"""
-	fdata+="POINTS "+String(4*number_of_cells_in_mesh())+" float"+"\n"
-	for l in mesh:
-		for c in l:
-			if c is Cell:
-				for m in [[0,0],[0,1],[1,1],[1,0]]:
-					fdata+=String(c.x+m[0])+" "+String(c.y+m[1])+" "+"0"+"\n"
-	fdata+="CELLS "+String(number_of_cells_in_mesh())+" "+String(5*number_of_cells_in_mesh())+"\n"
-	var id=0
-	for l in mesh:
-		for c in l:
-			if c is Cell:
-				fdata+="4 "+String(4*id)+" "+String(4*id+1)+" "+String(4*id+2)+" "+String(4*id+3)+"\n"
-				id+=1
-	fdata+="CELL_TYPES "+String(number_of_cells_in_mesh())+"\n"
-	for l in mesh:
-		for c in l:
-			if c is Cell:
-				fdata+="9\n"
-	fdata+="CELL_DATA "+String(number_of_cells_in_mesh())+"\n"
-	fdata+="""SCALARS pressure float
-LOOKUP_TABLE default\n"""
-	for l in mesh:
-		for c in l:
-			if c is Cell:
-				fdata+=String(c.data["p"])+" "
-	#print(fdata)
-	var f=File.new()
-	f.open("res://save3.vtk",File.WRITE)
-	f.store_string(fdata)
-	f.close()
